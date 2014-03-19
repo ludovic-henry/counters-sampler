@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "benchmarks", "benchmarks\benchmarks.csproj", "{36E79A4E-87E1-4D3E-A0D9-BB457B6800F5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "common", "common\common.csproj", "{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "manager-web", "manager-web\manager-web.csproj", "{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		AppStore|Any CPU = AppStore|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{36E79A4E-87E1-4D3E-A0D9-BB457B6800F5}.AppStore|Any CPU.ActiveCfg = AppStore|Any CPU
+		{36E79A4E-87E1-4D3E-A0D9-BB457B6800F5}.AppStore|Any CPU.Build.0 = AppStore|Any CPU
+		{36E79A4E-87E1-4D3E-A0D9-BB457B6800F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36E79A4E-87E1-4D3E-A0D9-BB457B6800F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36E79A4E-87E1-4D3E-A0D9-BB457B6800F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36E79A4E-87E1-4D3E-A0D9-BB457B6800F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}.AppStore|Any CPU.ActiveCfg = AppStore|Any CPU
+		{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}.AppStore|Any CPU.Build.0 = AppStore|Any CPU
+		{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = manager-web\manager-web.csproj
+	EndGlobalSection
+EndGlobal

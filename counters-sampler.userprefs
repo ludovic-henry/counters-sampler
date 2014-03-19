@@ -1,0 +1,19 @@
+﻿<Properties MonoDevelop.MonoMac.LastXamMacNagTime="3/19/2014 2:09:00 PM">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../nancy/src/Nancy/Bootstrapper/NancyBootstrapperBase.cs">
+    <Files>
+      <File FileName="manager-web/Main.cs" Line="1" Column="1" />
+      <File FileName="common/History.cs" Line="1" Column="1" />
+      <File FileName="manager-web/Views/Index.html" Line="1" Column="1" />
+      <File FileName="manager-web/CountersModule.cs" Line="1" Column="1" />
+      <File FileName="../nancy/src/Nancy/Bootstrapper/NancyBootstrapperBase.cs" Line="579" Column="1" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/ludovic/Dropbox/Developpement/Xamarin/counters-sampler/benchmarks/pi-digits/pi-digits.cs" line="30" column="1" />
+      <Breakpoint file="/Users/ludovic/Drive/Developpement/Xamarin/counters-sampler/manager-web/CountersModule.cs" line="20" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
