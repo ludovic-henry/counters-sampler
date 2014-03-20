@@ -14,35 +14,59 @@ namespace MonoCounters
             this.history = new SortedDictionary<long, Dictionary<short, Counter>>();
 
             this.inspector = inspector;
-            this.inspector.Tick += OnInspectorTick;
+            this.inspector.SampleTick += OnInspectorSampleTick;
         }
 
-        public SortedDictionary<long, List<Counter>> GetUpdatedSince(long timestamp, long limit)
+        public SortedDictionary<long, List<Counter>> this[long since, long limit]
         {
-            SortedDictionary<long, List<Counter>> updated = new SortedDictionary<long, List<Counter>>();
-
-            lock (this.history)
+            get
             {
-                long first = -1;
+                SortedDictionary<long, List<Counter>> updated = new SortedDictionary<long, List<Counter>>();
 
-                foreach (var e in this.history)
+                lock (this.history)
                 {
-                    if (e.Key > timestamp)
-                    {
-                        if (first < 0)
-                            first = e.Key;
-                        else if (e.Key > first + limit)
-                            break;
+                    long first = 0;
 
-                        updated.Add(e.Key, new List<Counter>(e.Value.Values));
+                    foreach (var e in this.history)
+                    {
+                        if (e.Key > since)
+                        {
+                            if (first == 0)
+                                first = e.Key;
+                            else if (e.Key > first + limit)
+                                break;
+
+                            updated.Add(e.Key, new List<Counter>(e.Value.Values));
+                        }
                     }
                 }
-            }
 
-            return updated;
+                return updated;
+            }
         }
 
-        private void OnInspectorTick (object sender, Inspector.TickEventArgs a) 
+        public long LastTimestamp
+        {
+            get
+            {
+                long last = 0;
+
+                lock (this.history)
+                {
+                    foreach (var e in this.history)
+                    {
+                        if (e.Key > last)
+                        {
+                            last = e.Key;
+                        }
+                    }
+                }
+
+                return last;
+            }
+        }
+
+        private void OnInspectorSampleTick (object sender, Inspector.TickEventArgs a) 
         {
             Dictionary<short, Counter> counters;
 
@@ -55,13 +79,7 @@ namespace MonoCounters
             }
             else
             {
-                var last = 0L;
-
-                foreach (var k in this.history.Keys)
-                    if (k > last)
-                        last = k;
-
-                counters = new Dictionary<short, Counter>(this.history[last]);
+                counters = new Dictionary<short, Counter>(this.history[LastTimestamp]);
 
                 foreach (var c in a.Counters)
                     counters[c.Index] = c;

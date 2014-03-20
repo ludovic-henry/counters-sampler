@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Net;
 using System.Threading;
-using Nancy.Hosting.Self;
 using System.Diagnostics;
 using System.Net.Sockets;
+using Nancy;
+using Nancy.Hosting.Self;
+//using MonoCounters;
+using MonoCounters.Web.Models;
 
 namespace MonoCounters.Web
 {
@@ -11,29 +14,29 @@ namespace MonoCounters.Web
     {
         public static void Main(string[] args)
         {
-            args = new string[] { "/Users/ludovic/Xamarin/counters-sampler/manager-web" };
-
-            if (args.Length < 1)
-            {
-                Console.WriteLine("Require at least 1 argument : rootpath");
-                Environment.Exit(1);
-            }
-
             var inspector = new Inspector(new TcpListener(IPAddress.Any, 8888));
-            var inspectorThread = new Thread(inspector.Run);
             var history = new History(inspector);
+            var thread = new Thread(inspector.Run);
 
-            inspectorThread.Start();
+            thread.Start();
 
-            using (var nancyHost = new NancyHost(new Uri("http://localhost:8080/"), new Uri("http://127.0.0.1:8080/")))
+            InspectorModel.Initialize(inspector);
+            HistoryModel.Initialize(history);
+
+            using (var nancyHost = new NancyHost(new Uri("http://127.0.0.1:8080/")))
             {
+                StaticConfiguration.DisableErrorTraces = false;
+                StaticConfiguration.Caching.EnableRuntimeViewUpdates = true;
+
                 nancyHost.Start();
 
-                Console.WriteLine("Nancy now listening - navigating to http://localhost:8888/. Press enter to stop");
-                Process.Start("http://localhost:8888/");
-                Console.ReadKey();
+                Console.WriteLine("Nancy now listening - navigating to http://127.0.0.1:8080/. Press ctrl+c to stop");
 
-                inspectorThread.Abort();
+                while (true)
+                {
+                    if (Console.ReadKey().Key == ConsoleKey.Enter)
+                        break;
+                }
             }
         }
     }

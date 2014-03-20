@@ -3,15 +3,24 @@ using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.IO;
+using System.Collections;
+using System.Threading.Tasks;
 
 namespace MonoCounters
 {
     public class Inspector
     {
         public delegate void TickEventHandler (object sender, TickEventArgs e);
-        public event TickEventHandler Tick;
+        public event TickEventHandler SampleTick;
+
+        private delegate void SocketCallback (Socket socket);
+        private Dictionary<string, Queue<SocketCallback>> callbacks;
 
         private TcpListener listener;
+        private Socket socket;
+        private byte[] buffer;
+
         private Dictionary<short, Counter> counters;
 
         public Boolean Enable { get; set; }
@@ -19,143 +28,304 @@ namespace MonoCounters
         public Inspector(TcpListener listener)
         {
             this.listener = listener;
+            this.socket = null;
+            this.buffer = new byte[12];
+
             this.counters = new Dictionary<short, Counter>();
+
+            this.callbacks = new Dictionary<string, Queue<SocketCallback>>();
+            this.callbacks.Add("list", new Queue<SocketCallback>());
+            this.callbacks.Add("add", new Queue<SocketCallback>());
+            this.callbacks.Add("remove", new Queue<SocketCallback>());
        
             Enable = true;
         }
 
-        public void Run()
+        public Task<Tuple<List<Counter>, ResponseStatus>> ListCounters()
         {
-            Debug.WriteLine("Start", "MonoCounters.Inspector");
-            listener.Start();
+            var promise = new TaskCompletionSource<Tuple<List<Counter>, ResponseStatus>>();
 
-            Socket socket = null;
-            var    buffer = new byte[12];
+            lock (this.socket)
+            {
+                WriteBufferToStream(this.socket,
+                    BitConverter.GetBytes((byte)0), 1);
 
-            try {
-                socket = listener.AcceptSocket();
-
-                Debug.WriteLine("Connection Open", "MonoCounters.Inspector");
-
-                // parse headers
-
-                if (!ReadStreamToBuffer(socket, buffer, 2))
-                    throw new Exception();
-                short count = BitConverter.ToInt16(buffer, 0);
-
-                for (short i = 0; i < count; i++)
+                lock (this.callbacks["list"])
                 {
-                    var counter = new Counter();
+                    this.callbacks["list"].Enqueue(socket => {
+                        ResponseStatus status = (ResponseStatus)ReadStreamToBuffer(socket, buffer, 1)[0];
 
-                    if (!ReadStreamToBuffer(socket, buffer, 4))
-                        throw new Exception();
-                    counter.Category = (Category)BitConverter.ToInt32(buffer, 0);
+                        short count = BitConverter.ToInt16(
+                            ReadStreamToBuffer(socket, buffer, 2), 0);
 
-                    if (!ReadStreamToBuffer(socket, buffer, 4))
-                        throw new Exception();
-                    int length = BitConverter.ToInt32(buffer, 0);
+                        var counters = new List<Counter>(count);
 
-                    if (length > buffer.Length)
-                        buffer = new byte[length];
-
-                    if (!ReadStreamToBuffer(socket, buffer, length))
-                        throw new Exception();
-                    counter.Name = Encoding.Default.GetString(buffer, 0, length);
-
-                    if (!ReadStreamToBuffer(socket, buffer, 4))
-                        throw new Exception();
-                    counter.Type = (Type)BitConverter.ToInt32(buffer, 0);
-
-                    if (!ReadStreamToBuffer(socket, buffer, 4))
-                        throw new Exception();
-                    counter.Unit = (Unit)BitConverter.ToInt32(buffer, 0);
-
-                    if (!ReadStreamToBuffer(socket, buffer, 4))
-                        throw new Exception();
-                    counter.Variance = (Variance)BitConverter.ToInt32(buffer, 0);
-
-                    if (!ReadStreamToBuffer(socket, buffer, 2))
-                        throw new Exception();
-                    counter.Index = BitConverter.ToInt16(buffer, 0);
-
-                    this.counters.Add(counter.Index, counter);
-                }
-
-
-                while (Enable)
-                {
-                    if (!ReadStreamToBuffer(socket, buffer, 8))
-                        throw new Exception();
-                    var timestamp = BitConverter.ToInt64(buffer, 0);
-
-                    // parse values
-
-                    while (true)
-                    {
-                        if (!ReadStreamToBuffer(socket, buffer, 2))
-                            throw new Exception();
-                        short index = BitConverter.ToInt16(buffer, 0);
-
-                        if (index < 0)
-                            break;
-
-                        Counter counter = new Counter(this.counters[index]);
-
-                        if (!ReadStreamToBuffer(socket, buffer, 2))
-                            throw new Exception();
-                        short size = BitConverter.ToInt16(buffer, 0);
-
-                        if (!ReadStreamToBuffer(socket, buffer, size))
-                            throw new Exception();
-
-                        switch (counter.Type) {
-                            case Type.MONO_COUNTER_TYPE_INT:
-                                counter.Value = BitConverter.ToInt32(buffer, 0);
-                                break;
-                            case Type.MONO_COUNTER_TYPE_WORD:
-                                counter.Value = (size == 4) ? BitConverter.ToInt32(buffer, 0) : BitConverter.ToInt64(buffer, 0);
-                                break;
-                            case Type.MONO_COUNTER_TYPE_LONG:
-                                counter.Value = BitConverter.ToInt64(buffer, 0);
-                                break;
-                            case Type.MONO_COUNTER_TYPE_DOUBLE:
-                                counter.Value = BitConverter.ToDouble(buffer, 0);
-                                break;
+                        for (short i = 0; i < count; i++)
+                        {
+                            counters.Add(ReadCounter());
                         }
 
-                        this.counters[index] = counter;
-                    }
+                        promise.SetResult(Tuple.Create<List<Counter>, ResponseStatus>(counters, status));
+                    });
+                }
+            }
 
-                    if (Tick != null)
+            return promise.Task;
+        }
+
+        public Task<Tuple<Counter, ResponseStatus>> AddCounter(string category, string name)
+        {
+            var promise = new TaskCompletionSource<Tuple<Counter, ResponseStatus>>();
+
+            lock (this.socket)
+            {
+                WriteBufferToStream(this.socket,
+                    BitConverter.GetBytes((byte)1), 1);
+
+                WriteBufferToStream(this.socket,
+                    BitConverter.GetBytes(category.Length), 4);
+
+                WriteBufferToStream(this.socket,
+                    Encoding.Default.GetBytes(category), category.Length);
+
+                WriteBufferToStream(this.socket,
+                    BitConverter.GetBytes(name.Length), 4);
+
+                WriteBufferToStream(this.socket,
+                    Encoding.Default.GetBytes(name), name.Length);
+
+                lock (this.callbacks["add"])
+                {
+                    this.callbacks["add"].Enqueue(socket => {
+                        Counter counter = null;
+                        ResponseStatus status = (ResponseStatus)ReadStreamToBuffer(socket, buffer, 1)[0];
+
+                        if (status == ResponseStatus.OK)
+                        {
+                            counter = ReadCounter();
+
+                            if (counters.ContainsKey(counter.Index))
+                                throw new Exception();
+
+                            this.counters.Add(counter.Index, counter);
+
+                        }
+
+                        promise.SetResult(Tuple.Create<Counter, ResponseStatus>(counter, status));
+                    });
+                }
+            }
+
+            return promise.Task;
+        }
+
+        public Task<ResponseStatus> RemoveCounters(short index)
+        {
+            var promise = new TaskCompletionSource<ResponseStatus>();
+
+            lock (this.socket)
+            {
+                WriteBufferToStream(this.socket,
+                    BitConverter.GetBytes((byte)2), 1);
+
+                WriteBufferToStream(this.socket,
+                    BitConverter.GetBytes(index), 2);
+
+                lock (this.callbacks["remove"])
+                {
+                    this.callbacks["remove"].Enqueue(socket => {
+                        promise.SetResult((ResponseStatus)ReadStreamToBuffer(socket, buffer, 1)[0]);
+                    });
+                }
+            }
+
+            return promise.Task;
+        }
+
+        public void Run()
+        {
+            listener.Start();
+
+            while (Enable)
+            {
+                try
+                {
+                    socket = listener.AcceptSocket();
+
+                    Debug.WriteLine("Connection Open", "MonoCounters.Inspector");
+
+                    while (Enable)
                     {
-                        Tick(this, new TickEventArgs(timestamp, new List<Counter>(this.counters.Values)));
+                        byte cmd = ReadStreamToBuffer(socket, buffer, 1)[0];
+
+                        switch (cmd)
+                        {
+                            case 0: // Hello
+                                short version = BitConverter.ToInt16(
+                                                    ReadStreamToBuffer(socket, buffer, 2), 0);
+
+                                short count = BitConverter.ToInt16(
+                                                  ReadStreamToBuffer(socket, buffer, 2), 0);
+
+                                for (short i = 0; i < count; i++)
+                                {
+                                    var counter = ReadCounter();
+
+                                    this.counters.Add(counter.Index, counter);
+                                }
+                                break;
+                            case 1: // List
+                                lock (this.socket) {
+                                    lock (this.callbacks["list"])
+                                        this.callbacks["list"].Dequeue()(socket);
+                                }
+                                break;
+                            case 2: // Add
+                                lock (this.socket) {
+                                    lock (this.callbacks["add"])
+                                        this.callbacks["add"].Dequeue()(socket);
+                                }
+                                break;
+                            case 3: // Remove
+                                lock (this.socket) {
+                                    lock (this.callbacks["remove"])
+                                        this.callbacks["remove"].Dequeue()(socket);
+                                }
+                                break;
+                            case 4: // Sampling
+                                long timestamp = BitConverter.ToInt64(
+                                    ReadStreamToBuffer(socket, buffer, 8), 0);
+
+                                while (true)
+                                {
+                                    short index = BitConverter.ToInt16(
+                                        ReadStreamToBuffer(socket, buffer, 2), 0);
+
+                                    if (index < 0)
+                                        break;
+
+                                    Counter counter = new Counter(this.counters[index]);
+
+                                    short size = BitConverter.ToInt16(
+                                        ReadStreamToBuffer(socket, buffer, 2), 0);
+
+                                    switch (counter.Type)
+                                    {
+                                        case Type.MONO_COUNTER_TYPE_INT:
+                                            counter.Value = BitConverter.ToInt32(
+                                                ReadStreamToBuffer(socket, buffer, 4), 0);
+                                            break;
+                                        case Type.MONO_COUNTER_TYPE_WORD:
+                                            counter.Value = (size == 4) ?
+                                                BitConverter.ToInt32(
+                                                ReadStreamToBuffer(socket, buffer, 4), 0) :
+                                                BitConverter.ToInt64(
+                                                ReadStreamToBuffer(socket, buffer, 8), 0);
+                                            break;
+                                        case Type.MONO_COUNTER_TYPE_LONG:
+                                            counter.Value = BitConverter.ToInt64(
+                                                ReadStreamToBuffer(socket, buffer, 8), 0);
+                                            break;
+                                        case Type.MONO_COUNTER_TYPE_DOUBLE:
+                                            counter.Value = BitConverter.ToDouble(
+                                                ReadStreamToBuffer(socket, buffer, 8), 0);
+                                            break;
+                                    }
+
+                                    this.counters[index] = counter;
+                                }
+
+                                if (SampleTick != null)
+                                    SampleTick(this, new TickEventArgs(timestamp, new List<Counter>(this.counters.Values)));
+
+                                break;
+                        }
                     }
                 }
-            } finally {
-                if (socket != null)
-                    socket.Close();
+                finally
+                {
+                    if (socket != null)
+                        socket.Close();
 
-                this.counters.Clear();
+                    this.counters.Clear();
+                }
             }
+
             Debug.WriteLine("Connection Closed", "MonoCounters.Inspector");
         }
 
-        private static Boolean ReadStreamToBuffer(Socket socket, byte[] buffer, int size)
+        private static byte[] ReadStreamToBuffer(Socket socket, byte[] buffer, int size)
         {
-            int read = 0, received;
+            int total = 0, received;
 
-            while (read < size)
+            while (total < size)
             {
-                received = socket.Receive(buffer, read, size - read, SocketFlags.None);
+                received = socket.Receive(buffer, total, size - total, SocketFlags.None);
 
                 if (received < 0)
-                    return false;
+                    throw new IOException();
 
-                read += received;
+                total += received;
             }
 
-            return true;
+            return buffer;
         }
+
+        private static byte[] WriteBufferToStream(Socket socket, byte[] buffer, int size)
+        {
+            int total = 0, sent;
+
+            while (total < size)
+            {
+                sent = socket.Send(buffer, total, size - total, SocketFlags.None);
+
+                if (sent < 0)
+                    throw new IOException();
+
+                total += sent;
+            }
+
+            return buffer;
+        }
+
+        private Counter ReadCounter()
+        {
+            var counter = new Counter();
+
+            counter.Category = (Category)BitConverter.ToInt32(
+                ReadStreamToBuffer(this.socket, this.buffer, 4), 0);
+
+            int length = BitConverter.ToInt32(
+                ReadStreamToBuffer(this.socket, this.buffer, 4), 0);
+
+            if (length > this.buffer.Length)
+                this.buffer = new byte[length];
+
+            counter.Name = Encoding.Default.GetString(
+                ReadStreamToBuffer(this.socket, this.buffer, length), 0, length);
+
+            counter.Type = (Type)BitConverter.ToInt32(
+                ReadStreamToBuffer(this.socket, this.buffer, 4), 0);
+
+            counter.Unit = (Unit)BitConverter.ToInt32(
+                ReadStreamToBuffer(this.socket, this.buffer, 4), 0);
+
+            counter.Variance = (Variance)BitConverter.ToInt32(
+                ReadStreamToBuffer(this.socket, this.buffer, 4), 0);
+
+            counter.Index = BitConverter.ToInt16(
+                ReadStreamToBuffer(this.socket, this.buffer, 2), 0);
+
+            return counter;
+        }
+
+        public enum ResponseStatus
+        {
+            OK,
+            NOK,
+            NOTFOUND,
+            EXISTING,
+        };
 
         public class TickEventArgs : EventArgs
         {
