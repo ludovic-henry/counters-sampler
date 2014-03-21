@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MonoCounters
 {
-    public class Inspector
+    public class Inspector : IDisposable
     {
         public delegate void TickEventHandler (object sender, TickEventArgs e);
         public event TickEventHandler SampleTick;
@@ -289,6 +289,11 @@ namespace MonoCounters
                 }
 
             }
+        }
+
+        public void Dispose()
+        {
+            this.Close();
         }
 
         private static byte[] ReadStreamToBuffer(Socket socket, byte[] buffer, int size)

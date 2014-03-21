@@ -18,13 +18,17 @@ namespace MonoCounters.Web
 
                 foreach (var vm in VirtualMachine.GetVirtualMachines())
                 {
-                    var process = Process.GetProcessById((int) vm.Pid);
+                    try {
+                        var process = Process.GetProcessById((int) vm.Pid);
 
-                    result.Add(new {
-                        pid = vm.Pid,
-                        is_current = vm.IsCurrent,
-                        name = process.ProcessName
-                    });
+                        result.Add(new {
+                            pid = vm.Pid,
+                            is_current = vm.IsCurrent,
+                            name = process.ProcessName
+                        });
+                    } catch (Exception e) {
+                        Debug.WriteLine ("Failed to read info on {0} due to {1}", vm.Pid, e.Message);
+                    }
                 }
 
                 return Response.AsJson(result);
@@ -47,6 +51,8 @@ namespace MonoCounters.Web
                 }
 
                 Debug.WriteLine("Trying to attach to pid " + pid.ToString(), "VirtualMachinesModule.Attach");
+
+                HistoryModel.History.Clear();
 
                 VirtualMachineModel.Current = new VirtualMachine(pid);
                 VirtualMachineModel.Current.StartPerfAgent("interval=1000,address=127.0.0.1:8888,counters=Mono GC/Created object count;Mono JIT/Compiled methods;Mono JIT/JIT trampolines");

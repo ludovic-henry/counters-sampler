@@ -66,6 +66,11 @@ namespace MonoCounters
             }
         }
 
+        public void Clear()
+        {
+            this.history.Clear();
+        }
+
         private void OnInspectorSampleTick (object sender, Inspector.TickEventArgs a) 
         {
             Dictionary<short, Counter> counters;

@@ -78,25 +78,25 @@
 						 .done(function (json) {
 						 	$.each(json, function (timestamp, counters) {
 						 		$.each(counters, function (i, counter) {
-						 			if (data[counter.Name] === undefined)
+						 			if (data[counter.name] === undefined)
 						 				AddCounter(counter);
 
-						 			var value = parseFloat(counter.Value);
+						 			var value = parseFloat(counter.value);
 
-									if (value < min[counter.Name])
-										min[counter.Name] = value;
+									if (value < min[counter.name])
+										min[counter.name] = value;
 
-									if (value > max[counter.Name])
-										max[counter.Name] = value;
+									if (value > max[counter.name])
+										max[counter.name] = value;
 
-									data[counter.Name].addRow([parseInt(timestamp) / TIMESTAMP_UNIT, value]);
+									data[counter.name].addRow([parseInt(timestamp) / TIMESTAMP_UNIT, value]);
 
 									if (firstTimestamp > 0) {
 										var min_ = Math.min(Math.max(lastTimestamp - MAX_TIMESTAMP_RANGE, firstTimestamp), lastTimestamp - MIN_TIMESTAMP_RANGE) / TIMESTAMP_UNIT
 
-										for (var i = data[counter.Name].getNumberOfRows() - 1;  i >= 0; i--) {
-											if (data[counter.Name].getFormattedValue(i, 0) < min_) {
-												data[counter.Name].removeRow(i);
+										for (var i = data[counter.name].getNumberOfRows() - 1;  i >= 0; i--) {
+											if (data[counter.name].getFormattedValue(i, 0) < min_) {
+												data[counter.name].removeRow(i);
 											}
 										}
 									}
@@ -108,10 +108,7 @@
 						 		lastTimestamp = parseInt(timestamp);
 						 	});
 
-							if ($.isEmptyObject(json)) {
-								setTimeout(UpdateCountersPeriodically, 1000);
-							} else
-								setTimeout(UpdateCountersPeriodically, 1000);
+							setTimeout(UpdateCountersPeriodically, 1000);
 						});
 					});
 				}
@@ -165,16 +162,28 @@
 				$("#forms form#vm-select").submit(function (event) {
 					event.preventDefault();
 
-					$.post("/virtual-machines/attach/" + $("#forms form#vm-select select[name=pid]").val())
+					var pid = $("#forms form#vm-select select[name=pid]").val();
+
+					$.post("/virtual-machines/attach/" + pid)
 					 .done(function (json) {
-					 	console.log("Added counter " + json);
+						names = [];
+						data   = {};
+						charts = {};
+						min    = {};
+						max    = {};
+						lastTimestamp = 0;
+						firstTimestamp = 0;
+
+
+
+					 	alert("Attached to  " + pid);
 					 });
 				});
 
 				function AddCounter(counter) {
-					var id = 'chart-' + counter.Index;
+					var id = 'chart-' + counter.index;
 
-					switch (counter.Category) {
+					switch (counter.category) {
 					case 0:
 						$("#jit-graphs").append('<div style="float:left" id="' + id + '"></div>');
 						break;
@@ -196,16 +205,16 @@
 						break;
 					}
 
-					charts[counter.Name] = new google.visualization.LineChart(document.getElementById(id));
+					charts[counter.name] = new google.visualization.LineChart(document.getElementById(id));
 
-					data[counter.Name] = new google.visualization.DataTable();
-					data[counter.Name].addColumn('number', 'Timestamp');
-					data[counter.Name].addColumn('number', counter.Name);
+					data[counter.name] = new google.visualization.DataTable();
+					data[counter.name].addColumn('number', 'Timestamp');
+					data[counter.name].addColumn('number', counter.name);
 
-			        min[counter.Name] =  Number.MAX_VALUE;
-			        max[counter.Name] = -Number.MAX_VALUE;
+			        min[counter.name] =  Number.MAX_VALUE;
+			        max[counter.name] = -Number.MAX_VALUE;
 
-			        names.push(counter.Name);
+			        names.push(counter.name);
 				}
 			}
 		</script>
