@@ -28,7 +28,7 @@ namespace MonoCounters.Web
                     counters.Add(new { category = t.Item1, name = t.Item2 });
                 }
 
-                return Response.AsJson(new { counters = counters });
+                return Response.AsJson(counters);
             };
 
             Post["/counters", true] = async (parameters, ct) =>

@@ -144,11 +144,9 @@
 				 .done(function (json) {
 				 	$("#forms form#counter-add select").empty();
 
-				 	if (json.status == 0) {
-					 	$.each(json.counters, function(i, counter) {
-					 		$("#forms form#counter-add select").append('<option value="' + counter.category + '/' + counter.name + '">' + counter.category + ' / ' + counter.name + '</option>');
-					 	});
-					}
+				 	$.each(json, function(i, counter) {
+				 		$("#forms form#counter-add select").append('<option value="' + counter.category + '/' + counter.name + '">' + counter.category + ' / ' + counter.name + '</option>');
+				 	});
 				 });
 
 				$("#forms form#counter-add").submit(function (event) {
