@@ -63,17 +63,14 @@
 				var min    = {};
 				var max    = {};
 				var lastTimestamp = 0;
-				var firstTimestamp = 0;
 
 				var TIMESTAMP_UNIT = Math.pow(10, 7);
-
-				var MIN_TIMESTAMP_RANGE =  1 * 60 * TIMESTAMP_UNIT;
-				var MAX_TIMESTAMP_RANGE = 10 * 60 * TIMESTAMP_UNIT;
+				var TIMESTAMP_RANGE = 10 * 60;
 
 				function UpdateCountersPeriodically() {
 					$.ajax ("/counters/last/timestamp")
 					 .done(function (json) {
-						$.ajax ("/counters/history", { data: { since: Math.max(parseInt(json) - MAX_TIMESTAMP_RANGE, lastTimestamp), limit: 60 * TIMESTAMP_UNIT } })
+						$.ajax ("/counters/history", { data: { since: Math.max(lastTimestamp, parseInt(json) / TIMESTAMP_UNIT - TIMESTAMP_RANGE) * TIMESTAMP_UNIT, limit: 60 * TIMESTAMP_UNIT } })
 						 .done(function (json) {
 						 	$.each(json, function (timestamp, counters) {
 						 		$.each(counters, function (i, counter) {
@@ -90,19 +87,12 @@
 
 									data[counter.name].addRow([parseInt(timestamp) / TIMESTAMP_UNIT, value]);
 
-									if (firstTimestamp > 0) {
-										var min_ = Math.min(Math.max(lastTimestamp - MAX_TIMESTAMP_RANGE, firstTimestamp), lastTimestamp - MIN_TIMESTAMP_RANGE) / TIMESTAMP_UNIT
-
-										for (var i = data[counter.name].getNumberOfRows() - 1;  i >= 0; i--) {
-											if (data[counter.name].getFormattedValue(i, 0) < min_) {
-												data[counter.name].removeRow(i);
-											}
+									for (var i = data[counter.name].getNumberOfRows() - 1;  i >= 0; i--) {
+										if (data[counter.name].getFormattedValue(i, 0) < lastTimestamp - TIMESTAMP_RANGE) {
+											data[counter.name].removeRow(i);
 										}
 									}
 								});
-
-								if (firstTimestamp == 0)
-									firstTimestamp = parseInt(timestamp) / TIMESTAMP_UNIT;
 
 						 		lastTimestamp = parseInt(timestamp) / TIMESTAMP_UNIT;
 						 	});
@@ -125,8 +115,8 @@
 				                                     height:    200,
 				                                     lineWidth: 2,
 				                                     pointSize: 0,
-				                                     hAxis:     {minValue: firstTimestamp, maxValue: lastTimestamp },
-				                                     vAxis:     {minValue: Math.min(0, min[v]), maxValue: max[v] * 1.1},
+				                                     hAxis:     {minValue: lastTimestamp - TIMESTAMP_RANGE, maxValue: lastTimestamp },
+				                                     vAxis:     {minValue: Math.min(0, min[v]), maxValue: max[v]},
 				                                     legend:    {position: 'none'},});
 
 					        deferred.resolve();

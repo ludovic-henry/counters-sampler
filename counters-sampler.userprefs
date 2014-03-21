@@ -2,18 +2,15 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="common/Inspector.cs">
     <Files>
-      <File FileName="manager-web/CountersModule.cs" Line="21" Column="22" />
-      <File FileName="common/Inspector.cs" Line="145" Column="26" />
-      <File FileName="manager-web/Main.cs" Line="26" Column="183" />
-      <File FileName="manager-web/Views/Counters/index.html" Line="148" Column="29" />
-      <File FileName="manager-web/VirtualMachinesModule.cs" Line="12" Column="10" />
-      <File FileName="manager-web/Models/VirtualMachineModel.cs" Line="8" Column="52" />
+      <File FileName="manager-web/CountersModule.cs" Line="25" Column="51" />
+      <File FileName="manager-web/Main.cs" Line="10" Column="1" />
+      <File FileName="manager-web/Views/Counters/index.html" Line="137" Column="7" />
+      <File FileName="common/Inspector.cs" Line="161" Column="30" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
       <Breakpoint file="/Users/ludovic/Dropbox/Developpement/Xamarin/counters-sampler/benchmarks/pi-digits/pi-digits.cs" line="30" column="1" />
-      <Breakpoint file="/Users/ludovic/Drive/Developpement/Xamarin/counters-sampler/common/Inspector.cs" line="147" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
