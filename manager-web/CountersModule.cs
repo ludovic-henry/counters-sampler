@@ -4,6 +4,7 @@ using Nancy;
 using Nancy.Json;
 using Nancy.TinyIoc;
 using MonoCounters.Web.Models;
+using Mono.Attach;
 
 namespace MonoCounters.Web
 {

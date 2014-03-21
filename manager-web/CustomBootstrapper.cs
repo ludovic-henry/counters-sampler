@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Nancy;
 using Nancy.TinyIoc;
 
@@ -16,7 +17,7 @@ namespace MonoCounters.Web
     {
         public string GetRootPath()
         {
-            return "/Users/ludovic/Xamarin/counters-sampler/manager-web";
+            return Path.Combine(Path.GetDirectoryName(this.GetType().Assembly.Location), "..", "..");
         }
     }
 }

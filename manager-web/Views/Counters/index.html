@@ -5,10 +5,15 @@
 	</head>
 	<body>
 		<div id="forms">
-			<form id="add-counter">
-				<label for="category">Category :</label><input type="text" name="category" />
-				<label for="name">Name :</label><input type="text" name="name" />
+			<form id="counter-add">
+				<label for="category">Category: </label><input type="text" name="category" />
+				<label for="name">Name: </label><input type="text" name="name" />
 				<input type="submit" value="Add" />
+			</form>
+
+			<form id="vm-select">
+				<label for="pid">Attach to: </label><select name="pid"> </select>
+				<input type="submit" value="Attach" />
 			</form>
 		</div> 
 		<div id="jit-graphs">
@@ -53,6 +58,7 @@
 			google.setOnLoadCallback(main);
 
 			function main() {
+				var names  = [];
 				var data   = {};
 				var charts = {};
 				var min    = {};
@@ -131,17 +137,35 @@
 				        return deferred.promise();
 					}))
 					 .done(function () {
-					 	setTimeout(UpdateChartsPeriodically, 500);
+					 	setTimeout(UpdateChartsPeriodically, 1000);
 					 });
 				}
 
 				UpdateCountersPeriodically();
 				UpdateChartsPeriodically();
 
-				$("#forms form#add-counter").submit(function (event) {
+				$("#forms form#counter-add").submit(function (event) {
 					event.preventDefault();
 
-					$.post("/counters", { category: $("#forms form#add-counter input[name=category]").val(), name: $("#forms form#add-counter input[name=name]").val() })
+					$.post("/counters", { category: $("#forms form#counter-add input[name=category]").val(), name: $("#forms form#counter-add input[name=name]").val() })
+					 .done(function (json) {
+					 	console.log("Added counter " + json);
+					 });
+				});
+
+				$.get("/virtual-machines")
+				 .done(function (vms) {
+				 	$("#forms form#vm-select select").empty();
+
+				 	$.each(vms, function(i, vm) {
+				 		$("#forms form#vm-select select").append('<option value="' + vm.pid + '">' + vm.pid + ' | ' + vm.name + (vm.is_current ? " (current)" : "") + '</option>');
+				 	});
+				 });
+
+				$("#forms form#vm-select").submit(function (event) {
+					event.preventDefault();
+
+					$.post("/virtual-machines/attach/" + $("#forms form#vm-select select[name=pid]").val())
 					 .done(function (json) {
 					 	console.log("Added counter " + json);
 					 });
