@@ -41,9 +41,25 @@ namespace MonoCounters
             Enable = true;
         }
 
-        public Task<Tuple<List<Counter>, ResponseStatus>> ListCounters()
+		string ReadString ()
+		{
+			int length = BitConverter.ToInt16 (
+				ReadStreamToBuffer (this.socket, this.buffer, 2), 0);
+
+			if (length < 0)
+				return null;
+
+			if (length > this.buffer.Length)
+				this.buffer = new byte[length];
+
+			string str = Encoding.Default.GetString (
+				              ReadStreamToBuffer (this.socket, this.buffer, length), 0, length);
+			return str;
+		}
+
+		public Task<List<Tuple<string, string>>> ListCounters()
         {
-            var promise = new TaskCompletionSource<Tuple<List<Counter>, ResponseStatus>>();
+			var promise = new TaskCompletionSource<List<Tuple<string,string>>>();
 
             lock (this.socket)
             {
@@ -53,19 +69,17 @@ namespace MonoCounters
                 lock (this.callbacks["list"])
                 {
                     this.callbacks["list"].Enqueue(socket => {
-                        ResponseStatus status = (ResponseStatus)ReadStreamToBuffer(socket, buffer, 1)[0];
+						var counters = new List<Tuple<string,string>> ();
 
-                        short count = BitConverter.ToInt16(
-                            ReadStreamToBuffer(socket, buffer, 2), 0);
+						while (true) {
+							var cat = ReadString ();
+							if (cat == null)
+								break;
+							var name = ReadString ();
+							counters.Add (Tuple.Create (cat, name));
+						}
 
-                        var counters = new List<Counter>(count);
-
-                        for (short i = 0; i < count; i++)
-                        {
-                            counters.Add(ReadCounter());
-                        }
-
-                        promise.SetResult(Tuple.Create<List<Counter>, ResponseStatus>(counters, status));
+						promise.SetResult(counters);
                     });
                 }
             }

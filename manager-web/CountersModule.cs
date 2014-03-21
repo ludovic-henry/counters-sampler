@@ -22,22 +22,7 @@ namespace MonoCounters.Web
             {
                 var result = await InspectorModel.Inspector.ListCounters();
 
-                var counters = new List<object>();
-
-                foreach (var counter in result.Item1)
-                {
-                    counters.Add(new {
-                        category = counter.CategoryName,
-                        name = counter.Name,
-                        type = counter.TypeName,
-                        unit = counter.UnitName,
-                        variance = counter.VarianceName,
-                        value = counter.Value,
-                        index = counter.Index
-                    });
-                }
-
-                return Response.AsJson(new { status = result.Item2, counters = counters });
+				return Response.AsJson(new { counters = result });
             };
 
             Post["/counters", true] = async (parameters, ct) =>
