@@ -102,9 +102,9 @@
 								});
 
 								if (firstTimestamp == 0)
-									firstTimestamp = parseInt(timestamp);
+									firstTimestamp = parseInt(timestamp) / TIMESTAMP_UNIT;
 
-						 		lastTimestamp = parseInt(timestamp);
+						 		lastTimestamp = parseInt(timestamp) / TIMESTAMP_UNIT;
 						 	});
 
 							setTimeout(UpdateCountersPeriodically, 1000);
@@ -125,6 +125,7 @@
 				                                     height:    200,
 				                                     lineWidth: 2,
 				                                     pointSize: 0,
+				                                     hAxis:     {minValue: firstTimestamp, maxValue: lastTimestamp },
 				                                     vAxis:     {minValue: Math.min(0, min[v]), maxValue: max[v] * 1.1},
 				                                     legend:    {position: 'none'},});
 
@@ -166,16 +167,22 @@
 
 					 	alert("Attached to  " + pid);
 
-						$.get("/counters")
-						 .done(function (json) {
-						 	$("#forms form#counter-add select").empty();
-
-						 	$.each(json, function(i, counter) {
-						 		$("#forms form#counter-add select").append('<option value="' + counter.category + '/' + counter.name + '">' + counter.category + ' / ' + counter.name + '</option>');
-						 	});
-						 });
+						UpdateCounters();
 					 });
 				});
+
+				function UpdateCounters() {
+					$.get("/counters")
+					 .done(function (json) {
+					 	$("#forms form#counter-add select").empty();
+
+					 	$.each(json, function(i, counter) {
+					 		$("#forms form#counter-add select").append('<option value="' + counter.category + '/' + counter.name + '">' + counter.category + ' / ' + counter.name + '</option>');
+					 	});
+					 });
+				}
+
+				UpdateCounters();
 
 				$("#forms form#counter-add").submit(function (event) {
 					event.preventDefault();
