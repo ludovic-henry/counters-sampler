@@ -23,8 +23,6 @@ namespace MonoCounters.Web
             InspectorModel.Initialize(inspector);
             HistoryModel.Initialize(history);
 
-//            new VirtualMachine(28449).StartPerfAgent("interval=1000,address=127.0.0.1:8888,counters=Mono GC/Created object count;Mono JIT/Compiled methods;Mono JIT/JIT trampolines");
-
             using (var nancyHost = new NancyHost(new Uri("http://127.0.0.1:8080/")))
             {
                 StaticConfiguration.DisableErrorTraces = false;
