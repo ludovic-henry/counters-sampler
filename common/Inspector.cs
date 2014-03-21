@@ -157,8 +157,6 @@ namespace MonoCounters
                     {
                         byte cmd = ReadStreamToBuffer(socket, buffer, 1)[0];
 
-                        Debug.WriteLine("Received command " + cmd.ToString(), "MonoCounters.Inspector.Run");
-
                         switch (cmd)
                         {
                             case 0: // Hello
@@ -260,19 +258,14 @@ namespace MonoCounters
 
                     this.counters.Clear();
                 }
-
-                Debug.WriteLine("Connection closed", "MonoCounters.Inspector");
             }
 
         }
 
         public void Close()
         {
-            Debug.WriteLine("Closing connection", "MonoCounters.Inspector.Close");
-
             if (this.socket == null)
             {
-                Debug.WriteLine("Socket was not open", "MonoCounters.Inspector.Close");
                 return;
             }
 
@@ -281,7 +274,6 @@ namespace MonoCounters
                 if (socket.Connected)
                 {
                     try {
-                        Debug.WriteLine("Send command 127", "MonoCounters.Inspector.Close");
                         WriteBufferToStream(this.socket, new byte[] { 127 }, 1);
                     } finally {
                         socket.Close();

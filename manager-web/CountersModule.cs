@@ -22,10 +22,22 @@ namespace MonoCounters.Web
             {
                 var result = await InspectorModel.Inspector.ListCounters();
 
-                var counters = (List<Counter>) result.Item1;
-                var status = (Inspector.ResponseStatus) result.Item2;
+                var counters = new List<object>();
 
-                return Response.AsJson(new { counters = counters, status = status });
+                foreach (var counter in result.Item1)
+                {
+                    counters.Add(new {
+                        category = counter.CategoryName,
+                        name = counter.Name,
+                        type = counter.TypeName,
+                        unit = counter.UnitName,
+                        variance = counter.VarianceName,
+                        value = counter.Value,
+                        index = counter.Index
+                    });
+                }
+
+                return Response.AsJson(new { status = result.Item2, counters = counters });
             };
 
             Post["/counters", true] = async (parameters, ct) =>
@@ -38,7 +50,15 @@ namespace MonoCounters.Web
                 var counter = (Counter) result.Item1;
                 var status = (Inspector.ResponseStatus) result.Item2;
 
-                return Response.AsJson(new { counter = counter, status = status });
+                return Response.AsJson(new { status = status, counter = new {
+                        category = counter.CategoryName,
+                        name = counter.Name,
+                        type = counter.TypeName,
+                        unit = counter.UnitName,
+                        variance = counter.VarianceName,
+                        value = counter.Value,
+                        index = counter.Index
+                    } });
             };
 
             Delete["/counters", true] = async (parameters, ctor) =>
@@ -55,14 +75,29 @@ namespace MonoCounters.Web
 
             Get["/counters/history"] = parameters =>
             {
-                var counters = new SortedDictionary<string, List<Counter>>();
+                var counters = new SortedDictionary<string, List<object>>();
 
                 var since = Request.Query["since"].HasValue ? long.Parse(Request.Query["since"]) : 0L;
                 var limit = Request.Query["limit"].HasValue ? long.Parse(Request.Query["limit"]) : long.MaxValue;
 
                 foreach (var e in HistoryModel.History[since, limit])
                 {
-                    counters.Add(e.Key.ToString(), e.Value);
+                    var list = new List<object>();
+
+                    foreach (var counter in e.Value)
+                    {
+                        list.Add(new {
+                            category = counter.CategoryName,
+                            name = counter.Name,
+                            type = counter.TypeName,
+                            unit = counter.UnitName,
+                            variance = counter.VarianceName,
+                            value = counter.Value,
+                            index = counter.Index
+                        });
+                    }
+
+                    counters.Add(e.Key.ToString(), list);
                 }
 
                 return Response.AsJson(counters);

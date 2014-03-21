@@ -38,7 +38,6 @@ namespace MonoCounters.Web
             {
                 if (VirtualMachineModel.Current != null)
                 {
-                    Debug.WriteLine("Close connection to previous VirtualMachine", "VirtualMachinesModule.Attach");
                     InspectorModel.Inspector.Close();
                 }
 
@@ -46,18 +45,13 @@ namespace MonoCounters.Web
 
                 if (!int.TryParse(parameters.pid, out pid))
                 {
-                    Debug.WriteLine("Bad pid : not an int. pid = " + parameters.pid.ToString(), "VirtualMachinesModule.Attach");
                     return Response.AsJson(new { status = "Bad pid : not an int. pid = " + parameters.pid.ToString()}, HttpStatusCode.BadRequest);
                 }
-
-                Debug.WriteLine("Trying to attach to pid " + pid.ToString(), "VirtualMachinesModule.Attach");
 
                 HistoryModel.History.Clear();
 
                 VirtualMachineModel.Current = new VirtualMachine(pid);
                 VirtualMachineModel.Current.StartPerfAgent("interval=1000,address=127.0.0.1:8888,counters=Mono GC/Created object count;Mono JIT/Compiled methods;Mono JIT/JIT trampolines");
-
-                Debug.WriteLine("Attached to pid " + pid.ToString(), "VirtualMachinesModule.Attach");
 
                 return Response.AsJson("");
             };

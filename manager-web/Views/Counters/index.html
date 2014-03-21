@@ -5,16 +5,15 @@
 	</head>
 	<body>
 		<div id="forms">
-			<form id="counter-add">
-				<label for="category">Category: </label><input type="text" name="category" />
-				<label for="name">Name: </label><input type="text" name="name" />
-				<input type="submit" value="Add" />
-			</form>
-
-			<form id="vm-select">
-				<label for="pid">Attach to: </label><select name="pid"> </select>
+			<form id="vm-select" style="float:left;padding-bottom:5px">
+				<select name="pid"> </select>
 				<input type="submit" value="Attach" />
 			</form>
+			<form id="counter-add" style="float:left;border-left:1px solid black;padding-left:10px;margin-left:10px">
+				<select name="counter"> </select>
+				<input type="submit" value="Add" />
+			</form>
+			<div style="clear:both"></div>
 		</div> 
 		<div id="jit-graphs">
 			<h1>JIT</h1>
@@ -141,12 +140,25 @@
 				UpdateCountersPeriodically();
 				UpdateChartsPeriodically();
 
+				$.get("/counters")
+				 .done(function (json) {
+				 	$("#forms form#counter-add select").empty();
+
+				 	if (json.status == 0) {
+					 	$.each(json.counters, function(i, counter) {
+					 		$("#forms form#counter-add select").append('<option value="' + counter.category + '/' + counter.name + '">' + counter.category + ' / ' + counter.name + '</option>');
+					 	});
+					}
+				 });
+
 				$("#forms form#counter-add").submit(function (event) {
 					event.preventDefault();
 
-					$.post("/counters", { category: $("#forms form#counter-add input[name=category]").val(), name: $("#forms form#counter-add input[name=name]").val() })
+					var value = $("#forms form#counter-add select").val().split("/");
+
+					$.post("/counters", { category: value[0], name: value[1] })
 					 .done(function (json) {
-					 	console.log("Added counter " + json);
+					 	alert("Added counter " + json);
 					 });
 				});
 
@@ -184,23 +196,22 @@
 					var id = 'chart-' + counter.index;
 
 					switch (counter.category) {
-					case 0:
+					case "Mono JIT":
 						$("#jit-graphs").append('<div style="float:left" id="' + id + '"></div>');
 						break;
-					case 1:
+					case "Mono GC":
 						$("#gc-graphs").append('<div style="float:left" id="' + id + '"></div>');
 						break;
-					case 2:
+					case "Mono Metadata":
 						$("#metadata-graphs").append('<div style="float:left" id="' + id + '"></div>');
 						break;
-					case 3:
+					case "Mono Generics":
 						$("#generics-graphs").append('<div style="float:left" id="' + id + '"></div>');
 						break;
-					case 4:
+					case "Mono Security":
 						$("#security-graphs").append('<div style="float:left" id="' + id + '"></div>');
 						break;
 					default:
-					case 0:
 						$("#graphs").append('<div style="float:left" id="' + id + '"></div>');
 						break;
 					}
