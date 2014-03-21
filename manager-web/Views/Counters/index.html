@@ -140,26 +140,6 @@
 				UpdateCountersPeriodically();
 				UpdateChartsPeriodically();
 
-				$.get("/counters")
-				 .done(function (json) {
-				 	$("#forms form#counter-add select").empty();
-
-				 	$.each(json, function(i, counter) {
-				 		$("#forms form#counter-add select").append('<option value="' + counter.category + '/' + counter.name + '">' + counter.category + ' / ' + counter.name + '</option>');
-				 	});
-				 });
-
-				$("#forms form#counter-add").submit(function (event) {
-					event.preventDefault();
-
-					var value = $("#forms form#counter-add select").val().split("/");
-
-					$.post("/counters", { category: value[0], name: value[1] })
-					 .done(function (json) {
-					 	alert("Added counter " + json);
-					 });
-				});
-
 				$.get("/virtual-machines")
 				 .done(function (vms) {
 				 	$("#forms form#vm-select select").empty();
@@ -184,9 +164,30 @@
 						lastTimestamp = 0;
 						firstTimestamp = 0;
 
-
-
 					 	alert("Attached to  " + pid);
+
+						$.get("/counters")
+						 .done(function (json) {
+						 	$("#forms form#counter-add select").empty();
+
+						 	$.each(json, function(i, counter) {
+						 		$("#forms form#counter-add select").append('<option value="' + counter.category + '/' + counter.name + '">' + counter.category + ' / ' + counter.name + '</option>');
+						 	});
+						 });
+					 });
+				});
+
+				$("#forms form#counter-add").submit(function (event) {
+					event.preventDefault();
+
+					var value = $("#forms form#counter-add select").val().split("/");
+
+					$.post("/counters", { category: value[0], name: value[1] })
+					 .done(function (json) {
+					 	if (json.status == 0)
+						 	alert("Added counter " + json.counter.category + "/" + json.counter.name);
+						else
+							alert("Error while addind counter. Status = " + status);
 					 });
 				});
 
