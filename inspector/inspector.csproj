@@ -5,11 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}</ProjectGuid>
+    <ProjectGuid>{EE087FB3-E9D8-496F-BD95-E8CDC8EB7729}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>MonoCounters.Web</RootNamespace>
-    <AssemblyName>manager-web</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>managerwebinspector</RootNamespace>
+    <AssemblyName>inspector</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,11 +18,6 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CustomCommands>
-      <CustomCommands>
-        <Command type="AfterExecute" command="" externalConsole="True" />
-      </CustomCommands>
-    </CustomCommands>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,33 +26,30 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Mono.Data.Sqlite" />
     <Reference Include="Nancy">
       <HintPath>..\packages\Nancy.0.22.2\lib\net40\Nancy.dll</HintPath>
     </Reference>
     <Reference Include="Nancy.Hosting.Self">
       <HintPath>..\packages\Nancy.Hosting.Self.0.22.2\lib\net40\Nancy.Hosting.Self.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Management">
-      <HintPath>..\..\mono\mcs\class\lib\net_4_5\tmp\Mono.Management.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Main.cs" />
-    <Compile Include="CountersModule.cs" />
     <Compile Include="CustomBootstrapper.cs" />
-    <Compile Include="Models\HistoryModel.cs" />
-    <Compile Include="Models\InspectorModel.cs" />
-    <Compile Include="VirtualMachinesModule.cs" />
-    <Compile Include="Models\VirtualMachineModel.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="RunModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj">
       <Project>{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}</Project>
@@ -66,11 +57,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\" />
     <Folder Include="Models\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Views\Counters\index.html" />
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

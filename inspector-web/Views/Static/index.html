@@ -65,7 +65,7 @@
 				var lastTimestamp = 0;
 
 				var TIMESTAMP_UNIT = Math.pow(10, 7);
-				var TIMESTAMP_RANGE = 10 * 60;
+				var TIMESTAMP_RANGE = 2 * 60;
 
 				function UpdateCountersPeriodically() {
 					$.ajax ("/counters/last/timestamp")
@@ -97,7 +97,7 @@
 						 		lastTimestamp = parseInt(timestamp) / TIMESTAMP_UNIT;
 						 	});
 
-							setTimeout(UpdateCountersPeriodically, 1000);
+							setTimeout(UpdateCountersPeriodically, 2000);
 						});
 					});
 				}
@@ -116,7 +116,7 @@
 				                                     lineWidth: 2,
 				                                     pointSize: 0,
 				                                     hAxis:     {minValue: lastTimestamp - TIMESTAMP_RANGE, maxValue: lastTimestamp },
-				                                     vAxis:     {minValue: Math.min(0, min[v]), maxValue: max[v]},
+				                                     vAxis:     {minValue: Math.min(0, min[v]), maxValue: max[v] * 1.1},
 				                                     legend:    {position: 'none'},});
 
 					        deferred.resolve();
@@ -124,7 +124,7 @@
 				        return deferred.promise();
 					}))
 					 .done(function () {
-					 	setTimeout(UpdateChartsPeriodically, 1000);
+					 	setTimeout(UpdateChartsPeriodically, 2000);
 					 });
 				}
 
@@ -136,7 +136,7 @@
 				 	$("#forms form#vm-select select").empty();
 
 				 	$.each(vms, function(i, vm) {
-				 		$("#forms form#vm-select select").append('<option value="' + vm.pid + '">' + vm.pid + ' | ' + vm.name + (vm.is_current ? " (current)" : "") + '</option>');
+				 		$("#forms form#vm-select select").append('<option value="' + vm.pid + '">' + vm.pid + ' | ' + vm.name + (vm.is_current ? " (current)" : "") + (vm.is_server ? " (server)" : "") + '</option>');
 				 	});
 				 });
 

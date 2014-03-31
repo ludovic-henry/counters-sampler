@@ -1,17 +1,20 @@
-﻿<Properties MonoDevelop.MonoMac.LastXamMacNagTime="3/21/2014 3:38:48 PM">
+﻿<Properties MonoDevelop.MonoMac.LastXamMacNagTime="3/31/2014 6:29:06 PM">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="common/Inspector.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="agent-android/MainActivity.cs">
     <Files>
-      <File FileName="manager-web/CountersModule.cs" Line="25" Column="51" />
-      <File FileName="manager-web/Main.cs" Line="10" Column="1" />
-      <File FileName="manager-web/Views/Counters/index.html" Line="137" Column="7" />
-      <File FileName="common/Inspector.cs" Line="161" Column="30" />
+      <File FileName="agent-android/MainActivity.cs" Line="40" Column="4" />
+      <File FileName="agent-android/Assets/benchmark.cs" Line="64" Column="5" />
+      <File FileName="agent-android/Properties/AndroidManifest.xml" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/ludovic/Dropbox/Developpement/Xamarin/counters-sampler/benchmarks/pi-digits/pi-digits.cs" line="30" column="1" />
+      <Breakpoint file="/Users/ludovic/Drive/Developpement/Xamarin/counters-sampler/agent-android/MainActivity.cs" line="41" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
-  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches>
+    <Watch file="common/Inspector.cs" line="226" offsetX="980" offsetY="3308" expression="stream.position" liveUpdate="False" />
+    <Watch file="common/Inspector.cs" line="226" offsetX="982" offsetY="3333" expression="stream.end" liveUpdate="False" />
+  </MonoDevelop.Ide.DebuggingService.PinnedWatches>
+  <MonoDevelop.Ide.ItemProperties.agent-android AndroidDeviceId-Debug="01aa2a0e9f55811c" MonoForAntroid.PreferredDevice="Nexus 4" />
 </Properties>

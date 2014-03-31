@@ -62,19 +62,31 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="MonoMac" />
+    <Reference Include="Mono.Data.Sqlite" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Inspector.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="History.cs" />
+    <Compile Include="Models\Sample.cs" />
+    <Compile Include="Models\Run.cs" />
+    <Compile Include="Models\Revision.cs" />
+    <Compile Include="Models\Recipe.cs" />
+    <Compile Include="Models\Project.cs" />
+    <Compile Include="Models\Device.cs" />
+    <Compile Include="Models\Counter.cs" />
+    <Compile Include="Models\Configuration.cs" />
+    <Compile Include="Models\Benchmark.cs" />
+    <Compile Include="Models\Base.cs" />
+    <Compile Include="Models\ForeignKeyAttribute.cs" />
   </ItemGroup>
 </Project>

@@ -8,17 +8,22 @@ using Mono.Attach;
 
 namespace MonoCounters.Web
 {
-
     public class CountersModule : NancyModule
     {
         public CountersModule()
         {
-            Get["/"] = parameters =>
+            Before += context =>
             {
-                return View["index"];
+                if (InspectorModel.Inspector == null)
+                    return Response.AsJson("No connection from agent yet", HttpStatusCode.MethodNotAllowed);
+
+                if (InspectorModel.Inspector.Closed)
+                    return Response.AsJson("Connection to agent closed", HttpStatusCode.MethodNotAllowed);
+
+                return null;
             };
 
-            Get["/counters", true] = async (parameters, ct) =>
+            Get["/counters", true] = async (parameters, context) =>
             {
                 var result = await InspectorModel.Inspector.ListCounters();
 
@@ -27,11 +32,11 @@ namespace MonoCounters.Web
                 foreach (var t in result) {
                     counters.Add(new { category = t.Item1, name = t.Item2 });
                 }
-
+                    
                 return Response.AsJson(counters);
             };
 
-            Post["/counters", true] = async (parameters, ct) =>
+            Post["/counters", true] = async (parameters, context) =>
             {
                 if (!Request.Form["category"].HasValue || !Request.Form["name"].HasValue)
                     return HttpStatusCode.BadRequest;
@@ -52,12 +57,12 @@ namespace MonoCounters.Web
                     } });
             };
 
-            Delete["/counters", true] = async (parameters, ctor) =>
+            Delete["/counters", true] = async (parameters, context) =>
             {
                 if (!Request.Form["index"].HasValue)
                     return HttpStatusCode.BadRequest;
 
-                var result = await InspectorModel.Inspector.RemoveCounters(Request.Form["index"]);
+                var result = await InspectorModel.Inspector.RemoveCounter(Request.Form["index"]);
 
                 var status = (Inspector.ResponseStatus) result;
    
