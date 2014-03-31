@@ -1,3 +1,5 @@
 benchmarks/
 inspector/Models/database.sqlite
 */bin/
+*/obj/
+out.sample
