@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using MonoCounters.Models;
 using Nancy;
 using Nancy.Hosting.Self;
 
@@ -19,22 +20,22 @@ namespace MonoCounters.Web
 			Models.Run.Initialize ();
 			Models.Sample.Initialize ();
 
-			var nancyHost = new NancyHost (new Uri ("http://127.0.0.1:8080/"));
+			var nancyHost = new NancyHost (new Uri ("http://127.0.0.1:8080/"), new Uri ("http://10.1.12.14:8080/"));
 
 			nancyHost.Start ();
 
-				StaticConfiguration.DisableErrorTraces = false;
-				StaticConfiguration.Caching.EnableRuntimeViewUpdates = true;
+			StaticConfiguration.DisableErrorTraces = false;
+			StaticConfiguration.Caching.EnableRuntimeViewUpdates = true;
 
-				Console.WriteLine ("Nancy now listening on http://127.0.0.1:8080/. Press key to stop");
+			Console.WriteLine ("Nancy now listening on http://127.0.0.1:8080/. Press key to stop");
 
-				while (true) {
-					if (Console.ReadKey ().Key == ConsoleKey.Enter) {
-						break;
-					}
-
-					Thread.Sleep (100);
+			while (true) {
+				if (Console.ReadKey ().Key == ConsoleKey.Enter) {
+					break;
 				}
+
+				Thread.Sleep (100);
+			}
 
 			nancyHost.Stop ();
 			nancyHost.Dispose ();
