@@ -1,20 +1,22 @@
-﻿<Properties MonoDevelop.MonoMac.LastXamMacNagTime="3/31/2014 6:29:06 PM">
+﻿<Properties MonoDevelop.MonoMac.LastXamMacNagTime="4/8/2014 5:27:38 PM">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="agent-android/MainActivity.cs">
     <Files>
-      <File FileName="agent-android/MainActivity.cs" Line="40" Column="4" />
-      <File FileName="agent-android/Assets/benchmark.cs" Line="64" Column="5" />
-      <File FileName="agent-android/Properties/AndroidManifest.xml" Line="1" Column="1" />
+      <File FileName="agent-android/MainActivity.cs" Line="22" Column="3" />
+      <File FileName="inspector/Main.cs" Line="38" Column="5" />
+      <File FileName="common/Benchmark.cs" Line="37" Column="1" />
+      <File FileName="inspector/RunModule.cs" Line="45" Column="28" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/ludovic/Drive/Developpement/Xamarin/counters-sampler/agent-android/MainActivity.cs" line="41" column="1" />
+      <Breakpoint file="/Users/ludovic/Drive/Developpement/Xamarin/counters-sampler/agent-android/BenchmarkService.cs" line="35" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
     <Watch file="common/Inspector.cs" line="226" offsetX="980" offsetY="3308" expression="stream.position" liveUpdate="False" />
     <Watch file="common/Inspector.cs" line="226" offsetX="982" offsetY="3333" expression="stream.end" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
-  <MonoDevelop.Ide.ItemProperties.agent-android AndroidDeviceId-Debug="01aa2a0e9f55811c" MonoForAntroid.PreferredDevice="Nexus 4" />
+  <MonoDevelop.Ide.ItemProperties.agent-android_27E AndroidDeviceId-Debug="01aa2a0e9f55811c" />
+  <MonoDevelop.Ide.ItemProperties.agent-android AndroidDeviceId-Debug="01aa2a0e9f55811c" AndroidDeviceId-Release="01aa2a0e9f55811c" />
 </Properties>
