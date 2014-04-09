@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Linq.Mapping;
 using System.IO;
 using System.Reflection;
 using System.Text;
 using Mono.Data.Sqlite;
+using System.Data.Linq.Mapping;
 
-namespace MonoCounters.Web.Models
+namespace MonoCounters.Models
 {
 	public abstract class Base
 	{

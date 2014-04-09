@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Linq.Mapping;
 using Mono.Data.Sqlite;
 
-namespace MonoCounters.Web.Models
+namespace MonoCounters.Models
 {
 	[Table (Name = "samples")]
 	public class Sample : Base

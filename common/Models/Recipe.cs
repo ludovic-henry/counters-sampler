@@ -1,9 +1,8 @@
 using System;
-using System.Data.Common;
 using System.Data.Linq.Mapping;
 using Mono.Data.Sqlite;
 
-namespace MonoCounters.Web.Models
+namespace MonoCounters.Models
 {
 	[Table (Name = "recipes")]
 	public class Recipe : Base

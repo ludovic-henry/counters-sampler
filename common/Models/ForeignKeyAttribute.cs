@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MonoCounters
+namespace MonoCounters.Models
 {
 	public class ForeignKeyAttribute : Attribute
 	{

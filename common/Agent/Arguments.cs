@@ -30,15 +30,6 @@ namespace MonoCounters.Agent
 					var value = split [1];
 
 					switch (split [0]) {
-					case "interval":
-						arguments.Interval = Int32.Parse (value);
-						break;
-					case "address":
-						arguments.Address = value;
-						break;
-					case "counters":
-						arguments.Counters = value;
-						break;
 					case "assembly":
 						arguments.Assembly = value;
 						break;
