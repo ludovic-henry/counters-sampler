@@ -1,60 +1,50 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.Content.PM;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
-using System.IO;
-using System.Text;
+using MonoCounters.Agent;
 
 namespace MonoCounters.Agent.Android
 {
-	[Activity (Label = "agent-android", MainLauncher = true)]
+	[Activity (MainLauncher = true)]
 	public class MainActivity : Activity
 	{
-
-		string assembly = "benchmark.exe";
-		string monoExe = "mono-sgen";
-
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 
-			var mono = OpenFileOutput ("mono", FileCreationMode.Private);
-			var benchmark = OpenFileOutput ("benchmark.exe", FileCreationMode.Private);
-
-			// Set our view from the "main" layout resource
 			SetContentView (Resource.Layout.Main);
 
-			var p = ApplicationContext.FilesDir.AbsolutePath;
+			var task = new Task (async () => {
+				try {
+					Console.WriteLine ("MainActivity | Benchmark : start");
 
-			Assets.Open (monoExe).CopyTo (mono);
-			Assets.Open (assembly).CopyTo (benchmark);
+					var args = Arguments.Parse (Assets.Open ("arguments.ini"));
 
-			var files = Directory.GetFiles (ApplicationContext.FilesDir.AbsolutePath);
+					await Assets.Open (args.Assembly).CopyToAsync (
+						OpenFileOutput ("benchmark.exe", FileCreationMode.WorldReadable));
 
-			var m = new FileInfo (ApplicationContext.FilesDir.AbsolutePath + "/mono");
-			var b = new FileInfo (ApplicationContext.FilesDir.AbsolutePath + "/benchmark.exe");
+					var time = new Benchmark (Assembly.LoadFile (FilesDir.AbsolutePath + "/benchmark.exe"), args.Class)
+						.Run (args.BenchmarkArguments.ToArray ());
 
-			var runtime = Java.Lang.Runtime.GetRuntime ();
+					Console.WriteLine ("MainActivity | Benchmark : end, time = {0:N3} ms", time / 10000d);
+				} catch (Exception e) {
+					Console.WriteLine (e);
+				} finally {
+					Finish ();
+				}
+			});
 
-			Console.WriteLine (Exec (runtime, new string [] { "/system/bin/chmod", "744", ApplicationContext.FilesDir.AbsolutePath + "/mono" }));
-
-//			Console.WriteLine ("before {0}", ApplicationContext.FilesDir.AbsolutePath);
-//			Console.WriteLine (Exec (runtime, new string [] { "ls", "-alh", ApplicationContext.FilesDir.AbsolutePath }));
-//			Console.WriteLine ("after");
-
-			Console.WriteLine (Exec (runtime, new string [] {
-				ApplicationContext.FilesDir.AbsolutePath + "/mono", ApplicationContext.FilesDir.AbsolutePath + "/benchmark.exe"
-			}));
-		}
-
-		protected string Exec (Java.Lang.Runtime runtime, string [] command) {
-			return new StreamReader (runtime.Exec (command).InputStream).ReadToEnd ();
+			task.Start ();
 		}
 	}
 }
-
 

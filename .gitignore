@@ -2,4 +2,5 @@ benchmarks/
 inspector/Models/database.sqlite
 */bin/
 */obj/
+*/gdb-symbols/
 out.sample
