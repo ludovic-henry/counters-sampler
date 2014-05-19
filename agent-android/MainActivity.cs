@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -11,6 +12,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using MonoCounters.Agent;
+using MonoCounters.Common.Agent;
 
 namespace MonoCounters.Agent.Android
 {
@@ -25,9 +27,20 @@ namespace MonoCounters.Agent.Android
 
 			var task = new Task (async () => {
 				try {
+					// FIXME
+					var inspector = "10.1.12.185:8080";
+					var recipeId = 1;
+
+					var output = "/sdcard/benchmark-profile.mpld";
+
+					var versions = new Dictionary<string, string> {
+						{ "mono", Mono.Runtime.GetDisplayName () },
+						{ "monodroid", "" }
+					};
+
 					Console.WriteLine ("MainActivity | Benchmark : start");
 
-					var args = Arguments.Parse (Assets.Open ("arguments.ini"));
+					var args = Arguments.Parse (Assets.Open ("arguments"));
 
 					await Assets.Open (args.Assembly).CopyToAsync (
 						OpenFileOutput ("benchmark.exe", FileCreationMode.WorldReadable));
@@ -36,6 +49,12 @@ namespace MonoCounters.Agent.Android
 						.Run (args.BenchmarkArguments.ToArray ());
 
 					Console.WriteLine ("MainActivity | Benchmark : end, time = {0:N3} ms", time / 10000d);
+					Console.WriteLine ("MainActivity | Log Upload : start, inspector = {3}, recipeId = {0}, output = {1}, versions = {2}",
+								recipeId, output, versions, inspector);
+
+					new ResultUploader (inspector).Upload (recipeId, new FileStream (output, FileMode.Open));
+
+					Console.WriteLine ("MainActivity | Log Upload : end");
 				} catch (Exception e) {
 					Console.WriteLine (e);
 				} finally {

@@ -1,13 +1,21 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent">
     <ImageView
+        android:id="@+id/BenchmarkImage"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_weight=".30"
         android:layout_gravity="center"
         android:src="@drawable/WaitingIcon"
         android:background="#C0C0C0" />
+<!--    <TextView
+        android:id="@+id/BenchmarkVersionsInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight=".70"
+        android:layout_gravity="left"
+        android:background="#E0E0E0" />-->
 </LinearLayout>
-
