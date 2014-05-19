@@ -4,7 +4,7 @@ using System.Reflection;
 using Nancy;
 using Nancy.TinyIoc;
 
-namespace MonoCounters.Web
+namespace MonoCounters.Inspector
 {
 	public class CustomBootstrapper : DefaultNancyBootstrapper
 	{

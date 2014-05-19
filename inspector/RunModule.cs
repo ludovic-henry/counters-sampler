@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using MonoCounters.Models;
 using Nancy;
+using System.IO;
 
-namespace MonoCounters.Web
+namespace MonoCounters.Inspector
 {
 	public class RunModule : NancyModule
 	{
@@ -18,19 +19,24 @@ namespace MonoCounters.Web
 
 					foreach (var file in Request.Files) {
 						if (file.Key.Equals ("samples")) {
-							var inspector = new Inspector (file.Value);
-							var cache = new Dictionary<short, Models.Counter> ();
+							var filename = Path.GetTempFileName ();
+							using (var output = new FileStream (filename, FileMode.OpenOrCreate | FileMode.Truncate, FileAccess.Write, FileShare.Read))
+								file.Value.CopyTo (output);
 
-							inspector.SampleTick += delegate(object sender, Inspector.TickEventArgs e) {
+							var inspector = new Common.Inspector.Inspector (filename);
+							var cache = new Dictionary<ulong, Models.Counter> ();
+
+							inspector.UpdatedSample += (sender, e) => {
 								var timestamp = e.Timestamp;
-								var counters = e.Counters;
 
-								foreach (var counter in counters) {
+								foreach (var counter in e.Counters) {
 									if (!cache.ContainsKey (counter.Index)) {
 										cache.Add (counter.Index,
-											Models.Counter.FindByCategoryAndName (counter.CategoryName, counter.Name) ?? new Models.Counter () { 
-												Category = counter.CategoryName, Name = counter.Name, Type = counter.TypeName, 
-												Unit = counter.UnitName, Variance = counter.VarianceName }.Save<Models.Counter> ());
+											Models.Counter.FindByCategoryAndName (counter.CategoryName, counter.Name) ??
+												new Models.Counter () { 
+													Category = counter.CategoryName, Name = counter.Name, Type = counter.TypeName, 
+													Unit = counter.UnitName, Variance = counter.VarianceName
+												}.Save<Models.Counter> ());
 									}
 
 									new Sample () { Run = run, Counter = cache [counter.Index], Timestamp = timestamp, Value = counter.Value }

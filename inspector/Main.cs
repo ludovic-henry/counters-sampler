@@ -4,7 +4,7 @@ using MonoCounters.Models;
 using Nancy;
 using Nancy.Hosting.Self;
 
-namespace MonoCounters.Web
+namespace MonoCounters.Inspector
 {
 	class MainClass
 	{
@@ -20,7 +20,7 @@ namespace MonoCounters.Web
 			Models.Run.Initialize ();
 			Models.Sample.Initialize ();
 
-			var nancyHost = new NancyHost (new Uri ("http://127.0.0.1:8080/"), new Uri ("http://10.1.12.14:8080/"));
+			var nancyHost = new NancyHost (new Uri ("http://127.0.0.1:8080/"), new Uri ("http://10.1.12.185:8080/"));
 
 			nancyHost.Start ();
 
