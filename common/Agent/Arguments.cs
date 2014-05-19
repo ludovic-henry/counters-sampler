@@ -2,16 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace MonoCounters.Agent
+namespace MonoCounters.Common.Agent
 {
 	public class Arguments
 	{
-		public int Interval { get; private set; }
-
-		public string Address { get; private set; }
-
-		public string Counters { get; private set; }
-
 		public string Assembly { get; private set; }
 
 		public string Class { get; private set; }
@@ -20,9 +14,7 @@ namespace MonoCounters.Agent
 
 		public static Arguments Parse (Stream stream)
 		{
-			var arguments = new Arguments ();
-
-			arguments.BenchmarkArguments = new List<string> ();
+			var arguments = new Arguments () { BenchmarkArguments = new List<string> () };
 
 			using (var reader = new StreamReader (stream)) {
 				while (!reader.EndOfStream) {
@@ -40,8 +32,7 @@ namespace MonoCounters.Agent
 						arguments.BenchmarkArguments.Add (value);
 						break;
 					default:
-						throw new ArgumentException (String.Format ("Unknown argument '{0}'", split [0]));
-						break;
+						 throw new ArgumentException (String.Format ("Unknown argument '{0}'", split [0]));
 					}
 				}
 			}

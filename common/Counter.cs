@@ -1,72 +1,55 @@
 ﻿using System;
 
-namespace MonoCounters
+namespace MonoCounters.Common
 {
 	public enum Category
 	{
-		JIT,
-		GC,
-		Metadata,
-		Generics,
-		Security,
-		Thread,
-		ThreadPool,
-		System,
-		Custom,
+		JIT = 1 << 8,
+		GC = 1 << 9,
+		Metadata = 1 << 10,
+		Generics = 1 << 11,
+		Security = 1 << 12,
+		Runtime = 1 << 13,
+		System = 1 << 14,
 	};
 
 	public enum Type
 	{
-		Int,
-		/* 4 bytes */
-		Long,
-		/* 8 bytes */
-		Word,
-		/* machine word */
-		Double,
+		Int = 0,
+		UInt = 1,
+		Word = 2,
+		Long = 3,
+		ULong = 4,
+		Double = 5,
+		String = 6,
+		TimeInterval = 7,
 	};
 
 	public enum Unit
 	{
-		None,
-		/* It's a raw value that needs special handling from the consumer */
-		Bytes,
-		/* Quantity of bytes the counter represent */
-		Time,
-		/* This is a timestap in 100n units */
-		Events,
-		/* Number of times the given event happens */
-		Config,
-		/* Configuration knob of the runtime */
-		Percentage,
-		/* Percentage of something */
+		Raw = 0 << 24,
+		Bytes = 1 << 24,
+		Time = 2 << 24,
+		Count = 3 << 24,
+		Percentage = 4 << 24,
 	};
 
 	public enum Variance
 	{
-		Constant = 1,
-		// This counter doesn't change. Agent will only send it once
-		Monotonic,
-		// This counter value always increase/decreate over time
-		Variable,
-		// This counter value can be anything on each sampling
+		Monotonic = 1 << 28,
+		Constant  = 1 << 29,
+		Variable  = 1 << 30,
 	};
 
 	public class Counter
 	{
 		public Category Category { get; set; }
-
 		public String   Name     { get; set; }
-
 		public Type     Type     { get; set; }
-
 		public Unit     Unit     { get; set; }
-
 		public Variance Variance { get; set; }
-
 		public Object   Value    { get; set; }
-
-		public short    Index    { get; set; }
+		public ulong    Index    { get; set; }
 
 		public Counter ()
 		{
@@ -96,14 +79,8 @@ namespace MonoCounters
 					return "Mono Generics";
 				case Category.Security:
 					return "Mono Security";
-				case Category.Thread:
-					return "Mono Thread";
-				case Category.ThreadPool:
-					return "Mono ThreadPool";
 				case Category.System:
 					return "Mono System";
-				case Category.Custom:
-					return "Mono Custom";
 				}
 
 				throw new InvalidOperationException ();
@@ -115,12 +92,20 @@ namespace MonoCounters
 				switch (Type) {
 				case Type.Int:
 					return "int";
+				case Type.UInt:
+					return "uint";
 				case Type.Long:
 					return "long";
+				case Type.ULong:
+					return "ulong";
 				case Type.Word:
 					return "word";
 				case Type.Double:
 					return "double";
+				case Type.String:
+					return "string";
+				case Type.TimeInterval:
+					return "time interval";
 				}
 
 				throw new InvalidOperationException ();
@@ -130,16 +115,14 @@ namespace MonoCounters
 		public string UnitName {
 			get {
 				switch (Unit) {
-				case Unit.None:
-					return "none";
+				case Unit.Raw:
+					return "raw";
 				case Unit.Bytes:
 					return "bytes";
 				case Unit.Time:
 					return "time";
-				case Unit.Events:
-					return "events";
-				case Unit.Config:
-					return "config";
+				case Unit.Count:
+					return "count";
 				case Unit.Percentage:
 					return "percentage";
 				}

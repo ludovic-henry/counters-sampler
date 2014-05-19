@@ -15,7 +15,7 @@ namespace MonoCounters.Models
 		public Counter Counter { get; set; }
 
 		[Column (Name = "timestamp", DbType = "integer")]
-		public long Timestamp { get; set; }
+		public ulong Timestamp { get; set; }
 
 		[Column (Name = "value")]
 		public object Value { get; set; }

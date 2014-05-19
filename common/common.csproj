@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>common</RootNamespace>
     <AssemblyName>common</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -19,6 +20,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -27,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,13 +51,25 @@
     <Compile Include="Models\Run.cs" />
     <Compile Include="Models\Sample.cs" />
     <Compile Include="Counter.cs" />
-    <Compile Include="History.cs" />
-    <Compile Include="Inspector.cs" />
     <Compile Include="Agent\Benchmark.cs" />
     <Compile Include="Agent\Arguments.cs" />
+    <Compile Include="Agent\ResultUploader.cs" />
+    <Compile Include="Inspector\History.cs" />
+    <Compile Include="Inspector\Inspector.cs" />
+    <Compile Include="Inspector\Profiler\Backtrace.cs" />
+    <Compile Include="Inspector\Profiler\BaseLogReader.cs" />
+    <Compile Include="Inspector\Profiler\BufferDescriptor.cs" />
+    <Compile Include="Inspector\Profiler\BufferHeader.cs" />
+    <Compile Include="Inspector\Profiler\CachedBinaryReader.cs" />
+    <Compile Include="Inspector\Profiler\EventListener.cs" />
+    <Compile Include="Inspector\Profiler\LogHeader.cs" />
+    <Compile Include="Inspector\Profiler\LogReader.cs" />
+    <Compile Include="Inspector\Profiler\ProfLogConstants.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Agent\" />
+    <Folder Include="Inspector\" />
+    <Folder Include="Inspector\Profiler\" />
   </ItemGroup>
 </Project>

@@ -3,13 +3,15 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace MonoCounters.Agent
+namespace MonoCounters.Common.Agent
 {
 	public class Benchmark
 	{
 		Assembly Assembly { get; set; }
 
 		string Klass { get; set; }
+
+		//PerformanceCounter Counter { get; set; }
 
 		public Benchmark (Assembly assembly, string klass)
 		{
@@ -20,6 +22,11 @@ namespace MonoCounters.Agent
 
 			Assembly = assembly;
 			Klass = klass;
+
+			/*var category = PerformanceCounterCategory.Create ("Custom", "Custom Counters", 
+				PerformanceCounterCategoryType.SingleInstance, "Benchmark Running", "Is Benchrmark Running ?");
+
+			Counter = new PerformanceCounter ("Custom", "Benchmark Running") { RawValue = 0 };*/
 		}
 
 		public long Run (string[] arguments)
@@ -32,9 +39,13 @@ namespace MonoCounters.Agent
 
 			var stopwatch = new Stopwatch ();
 
+			//Counter.RawValue = 1;
+
 			stopwatch.Start ();
 			method.Invoke (null, new object[] { arguments });
 			stopwatch.Stop ();
+
+			//Counter.RawValue = 0;
 
 			return stopwatch.ElapsedTicks;
 		}
