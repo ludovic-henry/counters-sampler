@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{79BD7F50-0CCD-46D2-BB7A-EB195F718B4C}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -46,6 +46,7 @@
     </Reference>
     <Reference Include="Mono.Management">
       <HintPath>..\..\mono\mcs\class\lib\net_4_5\tmp\Mono.Management.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Mono.Data.Sqlite" />
   </ItemGroup>
@@ -61,12 +62,6 @@
     <Compile Include="StaticModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\common\common.csproj">
-      <Project>{7D8D0EC7-406B-4878-86C2-C6FAF2B894EC}</Project>
-      <Name>common</Name>
-    </ProjectReference>
-  </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\" />
     <Folder Include="Models\" />
