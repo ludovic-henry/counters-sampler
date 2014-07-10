@@ -4,3 +4,5 @@ inspector/Models/database.sqlite
 */obj/
 */gdb-symbols/
 out.sample
+
+packages/Xamarin.UITest.*
