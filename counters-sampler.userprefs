@@ -1,19 +1,15 @@
 ﻿<Properties MonoDevelop.MonoMac.LastXamMacNagTime="4/8/2014 5:27:38 PM">
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="common/Inspector/Profiler/ProfLogConstants.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" PreferredExecutionTarget="Android.MonoForAndroid_API_19" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../benchmarking-suite/agent-monodroid/MainActivity.cs">
     <Files>
-      <File FileName="inspector-cli/Main.cs" Line="15" Column="91" />
-      <File FileName="inspector/RunModule.cs" Line="1" Column="1" />
-      <File FileName="common/Inspector/Profiler/LogHeader.cs" Line="1" Column="1" />
-      <File FileName="common/Inspector/Profiler/CachedBinaryReader.cs" Line="164" Column="18" />
-      <File FileName="common/Inspector/Profiler/EventListener.cs" Line="761" Column="28" />
-      <File FileName="common/Inspector/Profiler/ProfLogConstants.cs" Line="76" Column="27" />
-      <File FileName="common/Inspector/Inspector.cs" Line="1" Column="1" />
+      <File FileName="../benchmarking-suite/coordinator/Main.cs" Line="25" Column="25" />
+      <File FileName="../benchmarking-suite/agent-monodroid-test/Test.cs" Line="11" Column="11" />
+      <File FileName="../benchmarking-suite/agent-monodroid/MainActivity.cs" Line="25" Column="25" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore>
-      <Breakpoint file="/Users/ludovic/Xamarin/counters-sampler/common/Inspector/Profiler/CachedBinaryReader.cs" line="97" column="1" />
+      <Breakpoint file="/Users/ludovic/Xamarin/CppSharp/examples/Clang/Clang.cs" line="30" column="1" />
     </BreakpointStore>
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches>
@@ -26,6 +22,7 @@
     <Watch file="common/Inspector/Profiler/EventListener.cs" line="811" offsetX="1158" offsetY="12632" expression="sval" liveUpdate="False" />
     <Watch file="common/Inspector/Profiler/EventListener.cs" line="827" offsetX="687" offsetY="10738" expression="sval" liveUpdate="False" />
     <Watch file="common/Inspector/Profiler/EventListener.cs" line="827" offsetX="687" offsetY="10738" expression="sval" liveUpdate="False" />
+    <Watch file="../profiler/src/XamarinProfiler.Core/Reader/CachedBinaryReader.cs" line="64" offsetX="447" offsetY="882" expression="str_pos" liveUpdate="False" />
   </MonoDevelop.Ide.DebuggingService.PinnedWatches>
   <MonoDevelop.Ide.ItemProperties.agent-android_27E AndroidDeviceId-Debug="01aa2a0e9f55811c" />
   <MonoDevelop.Ide.ItemProperties.agent-android AndroidDeviceId-Release="01aa2a0e9f55811c" MonoForAntroid.PreferredDevice="Nexus 4" />

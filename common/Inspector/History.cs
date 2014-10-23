@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using XamarinProfiler.Core;
 
-
-namespace MonoCounters.Common.Inspector
+namespace BenchmarkingSuite.Common.Inspector
 {
 	public class History
 	{
-		private SortedDictionary<ulong, Dictionary<ulong, Counter>> history;
-		private Inspector inspector;
+		SortedDictionary<ulong, Dictionary<ulong, Counter>> history;
+		Inspector inspector;
 
 		public History (Inspector inspector)
 		{
@@ -19,7 +19,7 @@ namespace MonoCounters.Common.Inspector
 
 		public SortedDictionary<ulong, List<Counter>> this [ulong since, ulong limit] {
 			get {
-				SortedDictionary<ulong, List<Counter>> updated = new SortedDictionary<ulong, List<Counter>> ();
+				var updated = new SortedDictionary<ulong, List<Counter>> ();
 
 				lock (this.history) {
 					ulong first = 0;
@@ -69,12 +69,12 @@ namespace MonoCounters.Common.Inspector
 				counters = new Dictionary<ulong, Counter> ();
 
 				foreach (var c in a.Counters)
-					counters.Add (c.Index, c);
+					counters.Add (c.CounterID, c);
 			} else {
 				counters = new Dictionary<ulong, Counter> (this.history [LastTimestamp]);
 
 				foreach (var c in a.Counters)
-					counters [c.Index] = c;
+					counters [c.CounterID] = c;
 			}
 
 			lock (this.history) {

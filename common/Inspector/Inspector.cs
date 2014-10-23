@@ -1,52 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using XamarinProfiler.Core.Reader;
+using XamarinProfiler.Core;
+using System.Collections.Generic;
 
-namespace MonoCounters.Common.Inspector
+namespace BenchmarkingSuite.Common.Inspector
 {
 	public class Inspector
 	{
-		BaseLogReader Reader;
+		LogReader Reader;
 		InspectorEventListener Listener;
 
 		public delegate void SampleEventHandler (object sender, SampleEventArgs e);
 		public event SampleEventHandler Sample;
 		public event SampleEventHandler UpdatedSample;
 
-		public delegate void InitEventHandler (object sender, InitEventArgs e);
-		public event InitEventHandler Init;
-
 		public Inspector (string filename)
 		{
-			Reader = new BaseLogReader (filename);
+			Reader = new LogReader (filename, true);
 			Listener = new InspectorEventListener (this);
 		}
 
 		public void Run ()
 		{
- 			Reader.OpenReader ();
+			if (!Reader.OpenReader ())
+				return;
 
-			while (true) {
-				var buffer = Reader.TryReadBuffer (null, Listener);
-				if (Reader.IsEof)
+			foreach (var buf in Reader.ReadBuffer (Listener)) {
+				if (Reader.IsStopping)
 					break;
-				if (buffer == null)
-					throw new Exception ();
+				if (buf == null)
+					continue;
 			}
 		}
 
 		public class SampleEventArgs : EventArgs
 		{
 			public ulong Timestamp { get; internal set; }
-			public List<Counter> Counters  { get; internal set; }
-		}
-
-		public class InitEventArgs : EventArgs
-		{
 			public List<Counter> Counters  { get; internal set; }
 		}
 
@@ -61,49 +50,16 @@ namespace MonoCounters.Common.Inspector
 				Inspector = inspector;
 			}
 
-			public override void HandleSampleCountersDesc (List<Tuple<ulong, string, ulong, ulong, ulong, ulong>> counters)
+			public override void HandleSampleCountersDesc (List<Tuple<string, string, ulong, ulong, ulong, ulong>> counters)
 			{
-				foreach (var t in counters) {
-					Counters.Add (t.Item6, new Counter () {
-						Category = (Category)t.Item1,
-						Name = t.Item2,
-						Type = (Type)t.Item3,
-						Unit = (Unit)t.Item4,
-						Variance = (Variance)t.Item5,
-						Index = t.Item6
-					});
-				}
+				foreach (var t in counters)
+					Counters.Add (t.Item6, new Counter (t.Item1, t.Item2, t.Item3, t.Item4, t.Item5, t.Item6, null));
 			}
 
 			public override void HandleSampleCounters (ulong timestamp, List<Tuple<ulong, ulong, object>> values)
 			{
 				var counters = values.ConvertAll<Counter> (t => {
-					var counter = new Counter (Counters [t.Item1]);
-
-					if (counter.Value == null) {
-						counter.Value = t.Item3;
-					} else {
-						switch ((Common.Type)t.Item2) {
-						case Common.Type.Int:
-						case Common.Type.Long:
-						case Common.Type.Word:
-						case Common.Type.TimeInterval:
-							counter.Value = (long)(counter.Value) + (long)(t.Item3);
-							break;
-						case Common.Type.UInt:
-						case Common.Type.ULong:
-							counter.Value = (ulong)(counter.Value) + (ulong)(t.Item3);
-							break;
-						case Common.Type.Double:
-							counter.Value = (double)(t.Item3);
-							break;
-						case Common.Type.String:
-							counter.Value = (string)(t.Item3);
-							break;
-						}
-					}
-
-					return Counters [t.Item1] = counter;
+					return Counters [t.Item1] = new Counter (Counters [t.Item1], t.Item3);
 				});
 
 				if (Inspector.UpdatedSample != null)

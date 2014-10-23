@@ -1,35 +1,56 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Linq.Mapping;
+using System.Linq;
 using Mono.Data.Sqlite;
 
-namespace MonoCounters.Models
+namespace BenchmarkingSuite.Common.Models
 {
 	[Table(Name = "configurations")]
-	public class Configuration : Base
+	public class Configuration : DatabaseModel
 	{
-		[Column(Name = "mono_runtime")]
-		public string MonoRuntime { get; set; }
+		[Column(Name = "arguments")]
+		public string Arguments { get; set; }
 
-		[Column(Name = "mono_arguments")]
-		public string MonoArguments { get; set; }
-
-		[Column(Name = "environment_variables")]
+		[Column(Name = "envvar")]
 		public string EnvironmentVariables { get; set; }
 
-		protected Configuration (bool isNew) : base (isNew)
+		static Configuration ()
 		{
-		}
+			if (!IsConnectionOpen)
+				return;
 
-		public static void Initialize ()
-		{
 			new SqliteCommand (@"
 				CREATE TABLE IF NOT EXISTS configurations (
 					id INTEGER PRIMARY KEY AUTOINCREMENT
-				      , mono_runtime TEXT NOT NULL
-				      , mono_arguments TEXT NOT NULL
-				      , environment_variables TEXT NOT NULL
+				      , arguments TEXT NOT NULL
+				      , envvar TEXT NOT NULL
+				      , UNIQUE (arguments, envvar)
 				);
 			", Connection).ExecuteNonQuery();
+		}
+
+		public Configuration () : base ()
+		{
+		}
+
+		internal Configuration (bool isNew) : base (isNew)
+		{
+		}
+
+		public Configuration Save (bool ignore = false)
+		{
+			return Save<Configuration> (ignore);
+		}
+
+		public static List<Configuration> All ()
+		{
+			return All<Configuration> ();
+		}
+
+		public static Configuration FindByID (long id)
+		{
+			return FindByID<Configuration> (id);
 		}
     }
 }

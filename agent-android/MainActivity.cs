@@ -25,7 +25,7 @@ namespace MonoCounters.Agent.Android
 
 			SetContentView (Resource.Layout.Main);
 
-			var task = new Task (async () => {
+			var task = Task.Run (() => {
 				try {
 					// FIXME
 					var inspector = "10.1.12.185:8080";

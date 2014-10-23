@@ -3,11 +3,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{03B87C65-E6FD-4F76-91BA-73BEDC683B3D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>common</RootNamespace>
+    <RootNamespace>BenchmarkingSuite.Common</RootNamespace>
     <AssemblyName>common</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -36,40 +34,37 @@
     <Reference Include="System.Data.Linq" />
     <Reference Include="Mono.Data.Sqlite" />
     <Reference Include="System.Data" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\benchmarking-suite\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Models\Base.cs" />
     <Compile Include="Models\Benchmark.cs" />
     <Compile Include="Models\Configuration.cs" />
     <Compile Include="Models\Counter.cs" />
     <Compile Include="Models\Device.cs" />
     <Compile Include="Models\ForeignKeyAttribute.cs" />
-    <Compile Include="Models\Project.cs" />
     <Compile Include="Models\Recipe.cs" />
     <Compile Include="Models\Revision.cs" />
     <Compile Include="Models\Run.cs" />
     <Compile Include="Models\Sample.cs" />
-    <Compile Include="Counter.cs" />
-    <Compile Include="Agent\Benchmark.cs" />
-    <Compile Include="Agent\Arguments.cs" />
-    <Compile Include="Agent\ResultUploader.cs" />
     <Compile Include="Inspector\History.cs" />
     <Compile Include="Inspector\Inspector.cs" />
-    <Compile Include="Inspector\Profiler\Backtrace.cs" />
-    <Compile Include="Inspector\Profiler\BaseLogReader.cs" />
-    <Compile Include="Inspector\Profiler\BufferDescriptor.cs" />
-    <Compile Include="Inspector\Profiler\BufferHeader.cs" />
-    <Compile Include="Inspector\Profiler\CachedBinaryReader.cs" />
-    <Compile Include="Inspector\Profiler\EventListener.cs" />
-    <Compile Include="Inspector\Profiler\LogHeader.cs" />
-    <Compile Include="Inspector\Profiler\LogReader.cs" />
-    <Compile Include="Inspector\Profiler\ProfLogConstants.cs" />
+    <Compile Include="Models\Database.cs" />
+    <Compile Include="Inspector\Counter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Folder Include="Agent\" />
     <Folder Include="Inspector\" />
-    <Folder Include="Inspector\Profiler\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\profiler\src\XamarinProfiler.Core\XamarinProfiler.Core.csproj">
+      <Project>{36AAEA57-1B03-4003-BA14-2998F4B9DE3B}</Project>
+      <Name>XamarinProfiler.Core</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

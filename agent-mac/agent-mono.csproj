@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{60B2CB50-9602-42E7-A4BC-1350B25A7D5C}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>MonoCounters.Agent.Mac</RootNamespace>
+    <RootNamespace>MonoCounters.Agent.Mono</RootNamespace>
     <AssemblyName>agent-mac</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -20,7 +20,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <Commandlineparameters>/Users/ludovic/Xamarin/counters-sampler/agent-mac output.mpld 10.1.12.14</Commandlineparameters>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -32,14 +31,10 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="Main.cs" />
+    <Compile Include="Program.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Benchmark\" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="arguments.ini" />
-    <AndroidAsset Include="benchmark.exe" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\common.csproj">
@@ -50,5 +45,12 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Net" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

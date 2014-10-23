@@ -1,36 +1,86 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Linq.Mapping;
+using System.Linq;
 using Mono.Data.Sqlite;
 
-namespace MonoCounters.Models
+
+namespace BenchmarkingSuite.Common.Models
 {
 	[Table (Name = "revisions")]
-	public class Revision : Base
+	public class Revision : DatabaseModel
 	{
-		[Column (Name = "project_id"), ForeignKey (ThisKey = "project_id", ForeignType = typeof (Project), ForeignKey = "id")]
-		public Project Project { get; set; }
+		[Column (Name = "project")]
+		public string Project { get; set; }
 
-		[Column (Name = "run_id"), ForeignKey (ThisKey = "run_id", ForeignType = typeof (Run), ForeignKey = "id")]
-		public Run Run { get; set; }
+		[Column (Name = "architecture")]
+		public string Architecture { get; set; }
 
 		[Column (Name = "sha")]
-		public string Sha { get; set; }
+		public string Commit { get; set; }
+
+		[Column (Name = "creation_date")]
+		public DateTime CreationDate { get; set; }
+
+		public string Url {
+			get {
+				switch (Project) {
+				case "mono":      return String.Format ("https://github.com/mono/mono/tree/{0}", Commit);
+				case "monodroid": return String.Format ("https://github.com/xamarin/monodroid/tree/{0}", Commit);
+				case "monotouch": return String.Format ("https://github.com/xamarin/monotouch/tree/{0}", Commit);
+				default:          return null;
+				}
+			}
+		}
+
+		static Revision ()
+		{
+			if (!IsConnectionOpen)
+				return;
+
+			new SqliteCommand (@"
+				CREATE TABLE IF NOT EXISTS revisions (
+				        id INTEGER PRIMARY KEY AUTOINCREMENT
+				      , project TEXT NOT NULL
+				      , architecture TEXT NOT NULL
+				      , sha TEXT NOT NULL
+				      , creation_date DATETIME NOT NULL
+				      , UNIQUE (project, architecture, sha)
+				);
+			", Connection).ExecuteNonQuery ();
+		}
+
+		public Revision () : base ()
+		{
+		}
 
 		protected Revision (bool isNew) : base (isNew)
 		{
 		}
 
-		public static void Initialize ()
+		public Revision Save ()
 		{
-			new SqliteCommand (@"
-				CREATE TABLE IF NOT EXISTS revisions (
-					id INTEGER PRIMARY KEY AUTOINCREMENT
-				      , project_id INTEGER REFERENCES projects (id) ON DELETE CASCADE ON UPDATE CASCADE
-				      , run_id INTEGER REFERENCES runs (id) ON DELETE CASCADE ON UPDATE CASCADE
-				      , sha TEXT NOT NULL
-				      , UNIQUE (project_id, sha)
-				);
-			", Connection).ExecuteNonQuery ();
+			return Save<Revision> ();
+		}
+
+		public static List<Revision> All ()
+		{
+			return All<Revision> ();
+		}
+
+		public static Revision FindByID (long id)
+		{
+			return FindByID<Revision> (id);
+		}
+
+		public static List<Revision> FindByProjectAndArchitecture (string project, string architecture)
+		{
+			return FindBy<Revision> (new SortedDictionary<string, object> () { { "project", project }, { "architecture", architecture } });
+		}
+
+		public static Revision FindByProjectArchitectureAndCommit (string project, string architecture, string commit)
+		{
+			return FindBy<Revision> (new SortedDictionary<string, object> () { { "project", project }, { "architecture", architecture }, { "sha", commit } }).FirstOrDefault ();
 		}
 	}
 }

@@ -1,12 +1,7 @@
 ﻿using System;
-
 using NUnit.Framework;
 using Xamarin.UITest;
 using Xamarin.UITest.Android;
-using MonoCounters.Common.Agent;
-using System.IO;
-using System.Collections.Generic;
-using System.Reflection;
 
 namespace agentandroidtests
 {
